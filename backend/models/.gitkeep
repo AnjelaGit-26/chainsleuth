@@ -1,0 +1,8 @@
+# Place trained models here:
+# - graphsage_risk.onnx
+# - label_peeling_xgb.pkl
+# - label_fanout_xgb.pkl
+# - burner_wallet_xgb.pkl
+# - isolation_forest.pkl
+# - typology_scaler.pkl
+# - anomaly_scaler.pkl
