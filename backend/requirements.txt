@@ -1,0 +1,35 @@
+# ChainSleuth – Backend Dependencies
+# Python 3.12 | FastAPI (Async)
+
+# ── Web Framework ─────────────────────────────────────────────────────────────
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+
+# ── Settings & Validation ─────────────────────────────────────────────────────
+pydantic>=2.9.0
+pydantic-settings>=2.6.0
+
+# ── Graph Database, Relational DB & Cache ─────────────────────────────────────
+neo4j>=5.26.0
+redis>=5.2.0
+supabase>=2.0.0
+
+
+# ── AI & ML Inference ────────────────────────────────────────────────────────
+google-genai>=1.0.0
+onnxruntime>=1.19.0
+xgboost>=2.1.0,<3.0.0
+scikit-learn>=1.5.0
+joblib>=1.4.0
+numpy>=1.26.0
+
+# ── PDF Generation ────────────────────────────────────────────────────────────
+weasyprint>=63.0
+reportlab>=4.0.0
+jinja2>=3.1.4
+
+# ── HTTP Client & Utilities ───────────────────────────────────────────────────
+httpx>=0.27.0
+python-dotenv>=1.0.1
+python-multipart>=0.0.18
+

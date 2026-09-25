@@ -1,0 +1,11 @@
+[tool.pyright]
+include = ["app"]
+extraPaths = [".", "app"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]
