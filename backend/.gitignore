@@ -1,0 +1,45 @@
+# Environment & secrets — NEVER commit these
+.env
+*.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Generated PDFs
+generated_pdfs/
+static/notices/*.pdf
+static/fir/*.pdf
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
+
+# Databases & local data
+*.sqlite
+*.sqlite3
+*.db
+app/data/*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Auth0 credentials
+.auth0-mcp-state.json
+
+.auth0-mcp-writes.log

@@ -1,0 +1,62 @@
+# Environment & secrets — NEVER commit these
+.env
+*.env
+.env.*
+!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Node & Next.js
+node_modules/
+.next/
+out/
+.npm
+*.tsbuildinfo
+next-env.d.ts
+
+# Generated PDFs & exports
+generated_pdfs/
+static/notices/*.pdf
+static/fir/*.pdf
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.auth0-mcp-writes.log
+
+# Databases & local data
+*.sqlite
+*.sqlite3
+*.db
+app/data/*.sqlite
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Auth0 credentials / local tokens
+.auth0-mcp-state.json
