@@ -320,6 +320,11 @@ export async function createTrace(req: TraceRequest): Promise<TraceResult> {
 
   if (!res.ok) {
     const errorText = await res.text();
+    if (req.chain === "base" || errorText.toLowerCase().includes("base") || errorText.toLowerCase().includes("chain")) {
+      throw new Error(
+        `Base network tracing is not currently supported by the connected backend (${res.status}): ${errorText}`
+      );
+    }
     throw new Error(`Trace API error (${res.status}): ${errorText}`);
   }
 

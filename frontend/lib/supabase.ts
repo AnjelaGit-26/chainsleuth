@@ -65,6 +65,10 @@ export async function signUpWithEmail(
  * Sign out current session
  */
 export async function signOutUser() {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("chainsleuth_user_email");
+    localStorage.removeItem("chainsleuth_badge_number");
+  }
   return await supabase.auth.signOut();
 }
 
@@ -83,3 +87,25 @@ export async function getAuthUser(): Promise<User | null> {
   const { data } = await supabase.auth.getUser();
   return data.user;
 }
+
+/**
+ * Get current authenticated user email from Supabase session or local storage
+ */
+export async function getCurrentAuthUserEmail(): Promise<string | null> {
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (data.session?.user?.email) {
+      return data.session.user.email;
+    }
+  } catch (err) {
+    console.error("Error checking Supabase auth session:", err);
+  }
+
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("chainsleuth_user_email");
+    if (saved) return saved;
+  }
+
+  return null;
+}
+

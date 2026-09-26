@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { VASPAttribution } from "@/lib/types";
+import { VASPAttribution, Chain } from "@/lib/types";
 import {
   CheckCircle2,
   AlertTriangle,
@@ -13,15 +13,25 @@ import {
   Target,
   Layers,
   ArrowRight,
+  ExternalLink,
 } from "lucide-react";
+import {
+  getExplorerUrl,
+  getExplorerButtonLabel,
+  getExplorerTooltip,
+} from "@/lib/explorerUtils";
 
 interface VaspAttributionCardProps {
   attribution: VASPAttribution | null;
   caseId: string;
+  chain?: Chain | string;
 }
 
-export function VaspAttributionCard({ attribution, caseId }: VaspAttributionCardProps) {
+export function VaspAttributionCard({ attribution, caseId, chain = "tron" }: VaspAttributionCardProps) {
   if (!attribution) return null;
+
+  const depositExplorerUrl = getExplorerUrl(chain, "address", attribution.deposit_address);
+  const hotExplorerUrl = getExplorerUrl(chain, "address", attribution.hot_wallet_address);
 
   return (
     <div className="glass-panel flex flex-col gap-4 p-4 h-full overflow-y-auto">
@@ -74,9 +84,18 @@ export function VaspAttributionCard({ attribution, caseId }: VaspAttributionCard
         <p className="font-mono text-xs text-[var(--foreground)] break-all bg-white/60 rounded-lg px-3 py-2 border border-[color-mix(in_oklab,var(--primary)_25%,transparent)]">
           {attribution.deposit_address}
         </p>
-        <p className="text-[10px] text-[var(--muted-foreground)]">
-          Primary KYC-linked account named in Section 94 BNSS Legal Freeze Directive.
-        </p>
+        {depositExplorerUrl && (
+          <a
+            href={depositExplorerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={getExplorerTooltip(chain, "address")}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-xs font-semibold text-cyan-700 hover:bg-cyan-500/20 transition-colors"
+          >
+            <ExternalLink className="size-3.5" />
+            {getExplorerButtonLabel(chain, "address")}
+          </a>
+        )}
       </div>
 
       {/* Hot wallet — subdued */}
@@ -89,6 +108,18 @@ export function VaspAttributionCard({ attribution, caseId }: VaspAttributionCard
         <p className="font-mono text-xs text-[var(--muted-foreground)] break-all">
           {attribution.hot_wallet_address}
         </p>
+        {hotExplorerUrl && (
+          <a
+            href={hotExplorerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={getExplorerTooltip(chain, "address")}
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-cyan-600 transition-colors"
+          >
+            <ExternalLink className="size-3" />
+            {getExplorerButtonLabel(chain, "address")}
+          </a>
+        )}
       </div>
 
       {/* Nodal officer contacts */}

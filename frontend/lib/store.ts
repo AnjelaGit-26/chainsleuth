@@ -46,9 +46,27 @@ export const useAppStore = create<AppState>((set) => ({
   currentRole: "investigating_officer",
   role: "investigating_officer",
   userEmail: null,
-  setUserEmail: (userEmail) => set({ userEmail }),
+  setUserEmail: (userEmail) => {
+    if (typeof window !== "undefined") {
+      if (userEmail) {
+        localStorage.setItem("chainsleuth_user_email", userEmail);
+      } else {
+        localStorage.removeItem("chainsleuth_user_email");
+      }
+    }
+    set({ userEmail });
+  },
   badgeNumber: null,
-  setBadgeNumber: (badgeNumber) => set({ badgeNumber }),
+  setBadgeNumber: (badgeNumber) => {
+    if (typeof window !== "undefined") {
+      if (badgeNumber) {
+        localStorage.setItem("chainsleuth_badge_number", badgeNumber);
+      } else {
+        localStorage.removeItem("chainsleuth_badge_number");
+      }
+    }
+    set({ badgeNumber });
+  },
 
   setCurrentRole: (role) => {
     if (typeof window !== "undefined") {

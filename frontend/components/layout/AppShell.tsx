@@ -5,16 +5,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { UserRole } from "@/lib/types";
-import { signOutUser } from "@/lib/supabase";
+import { signOutUser, getCurrentAuthUserEmail, getAuthSession } from "@/lib/supabase";
 import {
   LayoutDashboard,
   Plus,
   FolderSearch,
   FileText,
-  Activity,
   ShieldCheck,
   UserRoundCog,
-  Building2,
   Lock,
   ChevronLeft,
   Menu,
@@ -83,13 +81,61 @@ export function AppShell({ children }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("chainsleuth_role") as UserRole | null;
-      if (saved) setCurrentRole(saved);
+    let isMounted = true;
+
+    async function verifySession() {
+      if (userEmail) {
+        if (isMounted) {
+          setIsAuthenticated(true);
+          setAuthChecking(false);
+        }
+        return;
+      }
+
+      const activeEmail = await getCurrentAuthUserEmail();
+      if (!isMounted) return;
+
+      if (activeEmail) {
+        setUserEmail(activeEmail);
+        const savedBadge = localStorage.getItem("chainsleuth_badge_number");
+        if (savedBadge) setBadgeNumber(savedBadge);
+        const session = await getAuthSession();
+        if (session?.user?.user_metadata?.role) {
+          setCurrentRole(session.user.user_metadata.role as UserRole);
+        } else if (typeof window !== "undefined") {
+          const savedRole = localStorage.getItem("chainsleuth_role") as UserRole | null;
+          if (savedRole) setCurrentRole(savedRole);
+        }
+        setIsAuthenticated(true);
+        setAuthChecking(false);
+      } else {
+        setIsAuthenticated(false);
+        setAuthChecking(false);
+        router.replace("/login");
+      }
     }
-  }, [setCurrentRole]);
+
+    verifySession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userEmail, router, setUserEmail, setBadgeNumber, setCurrentRole]);
+
+  if (authChecking || !isAuthenticated) {
+    return (
+      <div className="min-h-screen w-screen bg-[var(--background)] flex items-center justify-center">
+        <div className="flex items-center gap-3 text-sm text-[var(--muted-foreground)] font-mono">
+          <div className="size-4 animate-spin rounded-full border-2 border-[var(--primary)] border-t-transparent" />
+          <span>Verifying security session…</span>
+        </div>
+      </div>
+    );
+  }
 
   const currentRoleLabel = roles.find((r) => r.value === currentRole)?.label ?? "Investigating Officer";
 
@@ -236,7 +282,7 @@ export function AppShell({ children }: AppShellProps) {
                     setUserEmail(null);
                     setBadgeNumber(null);
                     setRoleMenuOpen(false);
-                    router.push("/login");
+                    router.replace("/login");
                   }}
                   className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-50 cursor-pointer"
                 >

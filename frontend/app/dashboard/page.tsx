@@ -158,7 +158,7 @@ export default function DashboardPage() {
           {/* Chain filter */}
           <div className="flex items-center gap-1">
             <Filter className="size-4 text-[var(--muted-foreground)] mr-1" />
-            {(["all", "tron", "solana", "ethereum", "bitcoin"] as const).map((chain) => (
+            {(["all", "tron", "solana", "ethereum", "bitcoin", "base"] as const).map((chain) => (
               <button
                 key={chain}
                 type="button"

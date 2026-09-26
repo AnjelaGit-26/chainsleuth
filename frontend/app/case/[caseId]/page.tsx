@@ -9,7 +9,12 @@ import { WalletDetailPanel } from "@/components/panels/WalletDetailPanel";
 import { RiskBadge } from "@/components/case/RiskBadge";
 import { getCase } from "@/lib/api";
 import { TraceResult, WalletNode, TransferEdge } from "@/lib/types";
-import { ShieldAlert, ArrowRightLeft, X, Loader2 } from "lucide-react";
+import { ShieldAlert, ArrowRightLeft, X, Loader2, ExternalLink } from "lucide-react";
+import {
+  getExplorerUrl,
+  getExplorerButtonLabel,
+  getExplorerTooltip,
+} from "@/lib/explorerUtils";
 
 export default function CaseWorkbenchPage({
   params,
@@ -37,6 +42,15 @@ export default function CaseWorkbenchPage({
       .finally(() => setLoading(false));
   }, [caseId]);
 
+  const suspectExplorerUrl = traceData
+    ? getExplorerUrl(traceData.chain, "address", traceData.suspect_address)
+    : null;
+
+  const selectedEdgeExplorerUrl =
+    traceData && selectedEdge
+      ? getExplorerUrl(traceData.chain, "tx", selectedEdge.txHash)
+      : null;
+
   return (
     <AppShell>
       <div className="workspace-in flex flex-col gap-4" style={{ minHeight: "calc(100vh - 80px)" }}>
@@ -49,10 +63,24 @@ export default function CaseWorkbenchPage({
                 Case Workbench: {caseId}
               </h1>
               {traceData && (
-                <p className="font-mono text-xs text-[var(--muted-foreground)] truncate">
-                  {traceData.suspect_address.slice(0, 14)}…{traceData.suspect_address.slice(-8)}
-                  &nbsp;·&nbsp;<span className="uppercase">{traceData.chain}</span>
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="font-mono text-xs text-[var(--muted-foreground)] truncate">
+                    {traceData.suspect_address.slice(0, 14)}…{traceData.suspect_address.slice(-8)}
+                    &nbsp;·&nbsp;<span className="uppercase font-semibold">{traceData.chain}</span>
+                  </p>
+                  {suspectExplorerUrl && (
+                    <a
+                      href={suspectExplorerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={getExplorerTooltip(traceData.chain, "address")}
+                      className="inline-flex items-center gap-1 rounded-md border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-bold text-cyan-700 hover:bg-cyan-500/20 transition-colors"
+                    >
+                      <ExternalLink className="size-3" />
+                      {getExplorerButtonLabel(traceData.chain, "address")}
+                    </a>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -147,6 +175,20 @@ export default function CaseWorkbenchPage({
                       <p className="font-mono text-[var(--foreground)] break-all">
                         {selectedEdge.txHash.slice(0, 20)}…
                       </p>
+                      {selectedEdgeExplorerUrl && (
+                        <div className="mt-1">
+                          <a
+                            href={selectedEdgeExplorerUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={getExplorerTooltip(traceData?.chain, "tx")}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-xs font-semibold text-cyan-700 hover:bg-cyan-500/20 transition-colors"
+                          >
+                            <ExternalLink className="size-3.5" />
+                            {getExplorerButtonLabel(traceData?.chain, "tx")}
+                          </a>
+                        </div>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>

@@ -22,6 +22,7 @@ const chainMap: Record<string, string> = {
   solana: "bg-purple-50 text-purple-600 border-purple-200",
   ethereum: "bg-blue-50 text-blue-600 border-blue-200",
   bitcoin: "bg-amber-50 text-amber-700 border-amber-200",
+  base: "bg-cyan-50 text-cyan-700 border-cyan-200",
 };
 
 function riskColor(score: number) {

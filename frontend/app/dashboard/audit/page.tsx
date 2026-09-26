@@ -7,8 +7,6 @@ import {
   Search,
   Filter,
   CheckCircle2,
-  ShieldCheck,
-  FileCheck,
 } from "lucide-react";
 
 interface AuditLogItem {

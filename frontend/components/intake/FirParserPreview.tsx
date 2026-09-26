@@ -63,6 +63,7 @@ export function FirParserPreview({
             <option value="solana">SOLANA (SPL)</option>
             <option value="ethereum">ETHEREUM (ERC-20)</option>
             <option value="bitcoin">BITCOIN (BTC)</option>
+            <option value="base">BASE (ETH / ERC-20)</option>
           </select>
         </div>
 

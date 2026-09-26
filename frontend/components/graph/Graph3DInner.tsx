@@ -260,7 +260,15 @@ export const Graph3DInner = forwardRef<GraphCanvasRef, Graph3DProps>(function Gr
       const riskStr = n.riskScore != null ? `${n.riskScore}/100` : "Risk assessment unavailable";
       const balanceStr =
         n.balance != null
-          ? `${n.balance.toLocaleString()} ${n.chain === "tron" ? "TRX" : "SOL"}`
+          ? `${n.balance.toLocaleString()} ${
+              n.chain === "tron"
+                ? "TRX"
+                : n.chain === "ethereum" || n.chain === "base"
+                ? "ETH"
+                : n.chain === "bitcoin"
+                ? "BTC"
+                : "SOL"
+            }`
           : "Balance unavailable";
 
       return `

@@ -214,6 +214,7 @@ export function TraceForm() {
                 <option value="solana">SOLANA (SPL Token)</option>
                 <option value="ethereum">ETHEREUM (ERC-20)</option>
                 <option value="bitcoin">BITCOIN (BTC)</option>
+                <option value="base">BASE (ETH / ERC-20)</option>
               </select>
             </div>
             <div className="space-y-1.5">

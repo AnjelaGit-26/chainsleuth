@@ -8,6 +8,7 @@ import {
   signInWithEmail,
   signUpWithEmail,
   getAuthSession,
+  getCurrentAuthUserEmail,
 } from "@/lib/supabase";
 import {
   ShieldCheck,
@@ -69,24 +70,48 @@ export default function LoginPage() {
   const [badgeId, setBadgeId] = useState("CYBER-MH-4402");
   const [password, setPassword] = useState("SecurePass2026!");
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if session already exists
-    getAuthSession().then((session) => {
-      if (session?.user) {
-        setUserEmail(session.user.email ?? null);
-        const metaRole = session.user.user_metadata?.role as UserRole | undefined;
-        if (metaRole) setCurrentRole(metaRole);
-      }
-    });
+    let isMounted = true;
 
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("chainsleuth_role") as UserRole | null;
-      if (saved) setCurrentRole(saved);
+    async function checkExistingSession() {
+      const activeEmail = await getCurrentAuthUserEmail();
+      if (!isMounted) return;
+
+      if (activeEmail) {
+        setUserEmail(activeEmail);
+        const savedBadge = localStorage.getItem("chainsleuth_badge_number");
+        if (savedBadge) setBadgeNumber(savedBadge);
+
+        const session = await getAuthSession();
+        if (session?.user?.user_metadata?.role) {
+          setCurrentRole(session.user.user_metadata.role as UserRole);
+        } else if (typeof window !== "undefined") {
+          const savedRole = localStorage.getItem("chainsleuth_role") as UserRole | null;
+          if (savedRole) setCurrentRole(savedRole);
+        }
+
+        router.replace("/dashboard");
+        return;
+      }
+
+      if (typeof window !== "undefined") {
+        const savedRole = localStorage.getItem("chainsleuth_role") as UserRole | null;
+        if (savedRole) setCurrentRole(savedRole);
+      }
+
+      setCheckingAuth(false);
     }
-  }, [setCurrentRole, setUserEmail]);
+
+    checkExistingSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router, setCurrentRole, setUserEmail, setBadgeNumber]);
 
   const handleRoleSelect = (role: UserRole) => {
     setCurrentRole(role);
@@ -186,6 +211,17 @@ export default function LoginPage() {
       icon: Building2,
     },
   ];
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen w-screen bg-[var(--background)] flex items-center justify-center">
+        <div className="flex items-center gap-3 text-sm text-[var(--muted-foreground)] font-mono">
+          <div className="size-4 animate-spin rounded-full border-2 border-[var(--primary)] border-t-transparent" />
+          <span>Verifying security session…</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen w-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center p-4 sm:p-8">

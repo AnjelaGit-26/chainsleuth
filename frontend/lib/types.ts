@@ -1,4 +1,4 @@
-export type Chain = "tron" | "solana" | "ethereum" | "bitcoin";
+export type Chain = "tron" | "solana" | "ethereum" | "bitcoin" | "base";
 
 export interface TraceRequest {
   suspect_address: string;

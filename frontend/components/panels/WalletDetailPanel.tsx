@@ -5,7 +5,12 @@ import { WalletNode, TransferEdge, VASPAttribution } from "@/lib/types";
 import { TypologyFlags } from "./TypologyFlags";
 import { RiskBadge } from "@/components/case/RiskBadge";
 import { VaspAttributionCard } from "./VaspAttributionCard";
-import { ArrowUpRight, ArrowDownLeft, ShieldAlert } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, ShieldAlert, ExternalLink } from "lucide-react";
+import {
+  getExplorerUrl,
+  getExplorerButtonLabel,
+  getExplorerTooltip,
+} from "@/lib/explorerUtils";
 
 interface WalletDetailPanelProps {
   node: WalletNode | null;
@@ -17,13 +22,20 @@ interface WalletDetailPanelProps {
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-0.5">{label}</p>
+      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-0.5">
+        {label}
+      </p>
       <p className="text-sm font-semibold text-[var(--foreground)]">{value}</p>
     </div>
   );
 }
 
-export function WalletDetailPanel({ node, edges = [], attribution = null, caseId = "" }: WalletDetailPanelProps) {
+export function WalletDetailPanel({
+  node,
+  edges = [],
+  attribution = null,
+  caseId = "",
+}: WalletDetailPanelProps) {
   if (!node) {
     return (
       <div className="glass-panel h-full flex flex-col items-center justify-center gap-3 p-6 text-center">
@@ -38,27 +50,50 @@ export function WalletDetailPanel({ node, edges = [], attribution = null, caseId
     );
   }
 
-  const isTargetVasp = node.isVasp || (attribution && node.address.toLowerCase() === attribution.deposit_address.toLowerCase());
+  const isTargetVasp =
+    node.isVasp ||
+    (attribution && node.address.toLowerCase() === attribution.deposit_address.toLowerCase());
   if (isTargetVasp && attribution) {
-    return <VaspAttributionCard attribution={attribution} caseId={caseId} />;
+    return <VaspAttributionCard attribution={attribution} caseId={caseId} chain={node.chain} />;
   }
 
   const walletTxs = edges.filter((e) => e.from === node.address || e.to === node.address);
+  const explorerUrl = getExplorerUrl(node.chain, "address", node.address);
 
   return (
     <div className="glass-panel flex flex-col gap-4 p-4 h-full overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Wallet Inspector</p>
+        <p className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+          Wallet Inspector
+        </p>
         <RiskBadge score={node.riskScore} size="sm" />
       </div>
 
-      {/* Address */}
+      {/* Address & Explorer Action */}
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-1">Full Wallet Address</p>
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+            Full Wallet Address
+          </p>
+        </div>
         <p className="font-mono text-xs text-[var(--foreground)] break-all bg-white/50 rounded-lg px-3 py-2 border border-[color-mix(in_oklab,var(--border)_50%,transparent)]">
           {node.address}
         </p>
+        {explorerUrl && (
+          <div className="mt-2">
+            <a
+              href={explorerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={getExplorerTooltip(node.chain, "address")}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-700 hover:bg-cyan-500/20 transition-colors shadow-xs"
+            >
+              <ExternalLink className="size-3.5" />
+              {getExplorerButtonLabel(node.chain, "address")}
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Metadata grid */}
@@ -67,7 +102,13 @@ export function WalletDetailPanel({ node, edges = [], attribution = null, caseId
         <InfoRow
           label="Balance"
           value={`${node.balance.toLocaleString()} ${
-            node.chain === "tron" ? "TRX" : node.chain === "ethereum" ? "ETH" : node.chain === "bitcoin" ? "BTC" : "SOL"
+            node.chain === "tron"
+              ? "TRX"
+              : node.chain === "ethereum" || node.chain === "base"
+              ? "ETH"
+              : node.chain === "bitcoin"
+              ? "BTC"
+              : "SOL"
           }`}
         />
         <InfoRow label="Risk Score" value={`${node.riskScore}/100`} />
@@ -97,11 +138,14 @@ export function WalletDetailPanel({ node, edges = [], attribution = null, caseId
         </p>
 
         {walletTxs.length === 0 ? (
-          <p className="text-xs text-[var(--muted-foreground)] text-center py-4">No transfer hops for this node</p>
+          <p className="text-xs text-[var(--muted-foreground)] text-center py-4">
+            No transfer hops for this node
+          </p>
         ) : (
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
             {walletTxs.map((tx) => {
               const isOut = tx.from === node.address;
+              const txUrl = getExplorerUrl(node.chain, "tx", tx.txHash);
               return (
                 <div
                   key={tx.txHash}
@@ -127,9 +171,22 @@ export function WalletDetailPanel({ node, edges = [], attribution = null, caseId
                       </p>
                     </div>
                   </div>
-                  <p className="font-mono text-xs font-bold text-[var(--foreground)] shrink-0">
-                    {tx.value.toLocaleString()} {tx.token}
-                  </p>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <p className="font-mono text-xs font-bold text-[var(--foreground)]">
+                      {tx.value.toLocaleString()} {tx.token}
+                    </p>
+                    {txUrl && (
+                      <a
+                        href={txUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={getExplorerTooltip(node.chain, "tx")}
+                        className="text-slate-400 hover:text-cyan-600 transition-colors p-1"
+                      >
+                        <ExternalLink className="size-3.5" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               );
             })}
