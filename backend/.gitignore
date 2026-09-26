@@ -34,6 +34,7 @@ logs/
 *.sqlite3
 *.db
 app/data/*.sqlite
+scratch/
 
 # OS
 .DS_Store

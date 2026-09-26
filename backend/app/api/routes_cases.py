@@ -74,6 +74,7 @@ def _build_wallet_node(raw: dict) -> WalletNode | None:
             "solana" if raw_chain == "solana"
             else "ethereum" if raw_chain == "ethereum"
             else "bitcoin" if raw_chain == "bitcoin"
+            else "base" if raw_chain == "base"
             else "tron"
         )
 

@@ -264,10 +264,24 @@ AUTH_ENABLED=true
 ```
 
 ### 3. Launch Command Center
+
+#### Native Python:
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
-Interactive API documentation live at: `http://localhost:8000/docs`.
+
+#### 🐳 Docker / Docker Compose (Recommended for Sharing & Production):
+```bash
+# Option A: One-command startup with Docker Compose
+docker compose up --build -d
+
+# Option B: Standard Docker build & run
+docker build -t chainsleuth-backend .
+docker run -d -p 8000:8000 --env-file .env --name chainsleuth-backend chainsleuth-backend
+```
+
+Interactive API documentation live at: `http://localhost:8000/docs`
+Health check endpoint: `http://localhost:8000/health`
 
 ---
 

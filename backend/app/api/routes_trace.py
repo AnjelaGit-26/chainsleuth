@@ -78,14 +78,15 @@ async def trace_address(payload: TraceRequest) -> TraceResult:
                    "Expected TRON (T + Base58 chars), EVM (0x + 40 hex), Solana (Base58 32–44), or Bitcoin (1/3/bc1).",
         )
 
-    # Warn if declared chain doesn't match detected format
+    # Warn if declared chain doesn't match detected format (unless both are EVM-compatible like Base/Ethereum)
     chain_map = {
         DetectedChain.TRON:     "tron",
         DetectedChain.ETHEREUM: "ethereum",
         DetectedChain.SOLANA:   "solana",
         DetectedChain.BITCOIN:  "bitcoin",
     }
-    if detected_chain and chain_map.get(detected_chain) != payload.chain:
+    is_evm_match = (payload.chain in {"ethereum", "base"} and detected_chain == DetectedChain.ETHEREUM)
+    if detected_chain and chain_map.get(detected_chain) != payload.chain and not is_evm_match:
         log.warning(
             "Chain mismatch: declared=%s detected=%s for address=%s. "
             "Proceeding with declared chain.",
@@ -292,6 +293,8 @@ async def get_trace(case_id: str) -> TraceResult:
     chain: Chain = (
         "solana" if raw_chain == "solana"
         else "ethereum" if raw_chain == "ethereum"
+        else "bitcoin" if raw_chain == "bitcoin"
+        else "base" if raw_chain == "base"
         else "tron"
     )
 

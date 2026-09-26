@@ -106,8 +106,10 @@ def _compute_risk_score(transfers_received: list[dict]) -> int:
 
 async def _fetch_transfers(address: str, chain: Chain) -> list[dict]:
     """Dispatch outbound transfer retrieval to chain-specific tracer."""
+    if chain == "base":
+        return await fetch_evm_transfers(address, chain="base", only_outbound=True)
     if chain == "ethereum":
-        return await fetch_evm_transfers(address, only_outbound=True)
+        return await fetch_evm_transfers(address, chain="ethereum", only_outbound=True)
     if chain == "solana":
         return await fetch_solana_transfers(address, only_outbound=True)
     if chain == "bitcoin":
@@ -117,8 +119,10 @@ async def _fetch_transfers(address: str, chain: Chain) -> list[dict]:
 
 async def _fetch_balance(address: str, chain: Chain) -> float:
     """Dispatch balance retrieval to chain-specific tracer."""
+    if chain == "base":
+        return await get_evm_balance(address, chain="base")
     if chain == "ethereum":
-        return await get_evm_balance(address)
+        return await get_evm_balance(address, chain="ethereum")
     if chain == "solana":
         return await get_solana_balance(address)
     if chain == "bitcoin":

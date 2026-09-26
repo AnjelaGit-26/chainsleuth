@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     ETH_RPC_URL: str = ""            # Optional: Custom Ethereum/EVM RPC (Alchemy, Infura, or QuickNode)
     SOLANA_RPC_URL: str = "https://api.mainnet-beta.solana.com"  # Solana Mainnet JSON-RPC or Helius endpoint
     MEMPOOL_API_URL: str = "https://mempool.space/api"           # Mempool.space / Blockstream Bitcoin REST API
+    BASESCAN_API_KEY: str = ""       # Optional: Basescan / Etherscan API key for Base network
+    BASE_RPC_URL: str = "https://mainnet.base.org"               # Official Base Public JSON-RPC endpoint
 
     # ── Commercial Threat Intelligence (Optional) ────────────────────────────────
     TRM_API_KEY: str = ""            # TRM Labs API Key for commercial VASP intelligence

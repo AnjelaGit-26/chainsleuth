@@ -391,6 +391,27 @@ VASP_REGISTRY: dict[str, VASPEntry] = {
         tags=["swapper", "no_kyc", "instant_exchange"],
         nodal_officer_email="support@simpleswap.io",
     ),
+
+    "coinbase": VASPEntry(
+        name="Coinbase / Base",
+        hot_wallets=[
+            "0x503828976D22510aad0201ac7EC88293211523Da",   # Coinbase EVM Hot Wallet 1
+            "0xA090e606E30bD747d4E6245a1517EbE430F0057e",   # Coinbase EVM Hot Wallet 2
+            "0x71660c4005BA85c37ccec55d0C4493E66Fe775d3",   # Coinbase EVM Hot Wallet 3
+            "0x49048044D57e1C92A77f79988d21Fa8fAF74E97e",   # Base Canonical Portal Bridge (Ethereum -> Base)
+            "0x3154Cf16ccdb4C6d922629664174b904d80F2C35",   # Base Portal L2 Contract
+            "0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64",   # Across Protocol Base SpokePool
+            "0x45f1A95A4D3f3836523F5c83673c797f4d4d263B",   # Stargate Base Router
+            "GJRs4FwHtemZ5ZE9x3FNvJ83gwPx2XMBpkxggK4wpmzp",  # Coinbase Solana Hot Wallet
+            "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",          # Coinbase Bitcoin Sweep
+        ],
+        deposit_address_prefixes=["0x", "GJ", "1", "3"],
+        jurisdiction="United States",
+        is_fiu_registered=False,
+        risk_level="low",
+        tags=["exchange", "tier1", "global", "base_founder", "custodial", "bridge"],
+        nodal_officer_email="lawenforcement@coinbase.com",
+    ),
 }
 
 # ── Flat index: hot_wallet_address → VASPEntry ────────────────────────────────
